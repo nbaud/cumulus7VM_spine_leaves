@@ -6,17 +6,23 @@ Vagrant.configure("2") do |config|
   config.vbguest.auto_update = false
 
   # Nodes configuration
-  nodes = {
-    "leaf01" => {
-      "intnets" => ["intnet-1", "intnet-3", "intnet-4"]
-    },
-    "leaf02" => {
-      "intnets" => ["intnet-2", "intnet-3", "intnet-4"]
-    },
-    "spine01" => {
-      "intnets" => ["intnet-1", "intnet-2"]
-    }
+nodes = {
+  "leaf01" => {
+    "intnets" => ["intnet-1", "intnet-2"]
+  },
+  "leaf02" => {
+    "intnets" => ["intnet-3", "intnet-4"]
+  },
+  "leaf03" => {
+    "intnets" => ["intnet-5", "intnet-6"]
+  },
+  "spine01" => {
+    "intnets" => ["intnet-1", "intnet-3", "intnet-5"]
+  },
+  "spine02" => {
+    "intnets" => ["intnet-2", "intnet-4", "intnet-6"]
   }
+}
 
   # Iterate through each node
   nodes.each do |node_name, node_data|
@@ -30,10 +36,10 @@ Vagrant.configure("2") do |config|
 
       # VirtualBox configuration
       node.vm.provider "virtualbox" do |vb|
+        vb.name = node_name
         vb.memory = "2048"
         vb.cpus = 2
-
-        # Dynamic NIC customization based on intnets
+      # Dynamic NIC customization based on intnets
         node_data["intnets"].each_with_index do |intnet, idx|
           vb.customize ['modifyvm', :id, "--nicpromisc#{idx+2}", 'allow-vms']
         end
