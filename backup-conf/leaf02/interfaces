@@ -1,0 +1,82 @@
+root@leaf02:mgmt:/home/vagrant# cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*.intf
+
+# The loopback network interface
+auto lo
+iface lo inet static
+    address 10.0.0.2/32
+    vxlan-local-tunnelip 10.0.0.2
+
+# The primary network interface
+auto eth0
+iface eth0 inet dhcp
+    vrf mgmt
+
+auto mgmt
+iface mgmt
+    address 127.0.0.1/8
+    address ::1/128
+    vrf-table auto
+
+# Interface connected to spine01
+auto swp1
+iface swp1 inet static
+    address 10.1.2.1/30
+    mtu 9050
+
+# Interface connected to spine02
+auto swp2
+iface swp2 inet static
+    address 10.2.2.1/30
+    mtu 9050
+
+# Defining the choubidou vrf
+auto choubidou
+iface choubidou
+    vrf-table auto
+
+# One bridge to rule them all
+auto vmbr0
+iface vmbr0
+    bridge-ports vxlan10010 vxlan10020
+    bridge-vids 10010 10020
+    bridge-stp off
+    bridge-vlan-aware yes
+    mtu 9000
+
+# VLAN configurations
+auto vlan10
+iface vlan10
+    vlan-id 10
+    vlan-raw-device vmbr0
+    mtu 9000
+    vrf choubidou
+
+auto vlan20
+iface vlan20
+    vlan-id 20
+    vlan-raw-device vmbr0
+    mtu 9000
+    vrf choubidou
+
+#VXLAN10010
+auto vxlan10010
+iface vxlan10010
+    bridge-access 10
+    bridge-learning off
+    bridge-arp-nd-suppress on
+    mtu 9000
+    vxlan-id 10010
+
+#VXLAN10020
+auto vxlan10020
+iface vxlan10020
+    bridge-access 20
+    bridge-learning off
+    bridge-arp-nd-suppress on
+    mtu 9000
+    vxlan-id 10020
+
