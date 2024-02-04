@@ -1,10 +1,13 @@
+#### Current version optimised for virtualbox 7.0.14 with guest addition
+
 Vagrant.configure("2") do |config|
 
-  # Base box
+
+## Base box
   config.vm.box_check_update = false
   config.vbguest.auto_update = false
 
-  # Nodes configuration
+## Nodes configuration
   nodes = {
     "leaf01" => {
       "intnets" => ["intnet-1", "intnet-2", "intnet-1-extra"],
@@ -47,25 +50,27 @@ Vagrant.configure("2") do |config|
         node.vm.network "private_network", virtualbox__intnet: intnet, auto_config: false
       end
 
-      # VirtualBox configuration
+##### VirtualBox configuration
       node.vm.provider "virtualbox" do |vb|
         vb.name = node_name
 
         if ["vm01", "vm03"].include?(node_name)
-          vb.memory = "512"  # default RAM
+          vb.memory = "512"  # default RAM for basic VM
           vb.cpus = 1
         else
-          vb.memory = "2048"
+          vb.memory = "2048" # more for the cumulus
           vb.cpus = 2
         end
+#####
 
-        # Dynamic NIC customization based on intnets
+##### Dynamic NIC customization based on intnets
         node_data["intnets"].each_with_index do |intnet, idx|
           vb.customize ['modifyvm', :id, "--nicpromisc#{idx+2}", 'allow-vms']
         end
       end
+#####
 
-      # Basic setup provisioning
+##### Basic setup provisioning
       node.vm.provision "shell", inline: <<-SHELL
         echo "#{node_name} #{node_name}" >> /etc/hosts
         mkdir -p /home/vagrant/.ssh
@@ -78,54 +83,38 @@ Vagrant.configure("2") do |config|
         locale-gen en_US.UTF-8
         update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
       SHELL
+#####
 
-      # Install VirtualBox Guest Additions provisioning for Cumulus VX
-      if ["leaf01", "leaf02", "leaf03", "spine01", "spine02"].include?(node_name)
-        node.vm.provision "shell", inline: <<-SHELL
-          apt install apt-utils -y
-          apt install -y linux-headers-$(uname -r) build-essential
-          apt install -y kernel-mft-dkms-5.10.0-cl-1-amd64
-          /sbin/rcvboxadd setup
-          rcvboxadd reload
-          systemctl restart vboxadd.service
-          systemctl status vboxadd.service || {
-            echo "vboxadd.service status check failed. Please check the service manually."
-          }
-        SHELL
-        # Disable the default /vagrant shared folder
-        node.vm.synced_folder ".", "/vagrant", disabled: true
+##### Install VirtualBox Guest Additions provisioning and shared directory
+      node.vm.provision "shell", inline: <<-SHELL
+        apt install apt-utils -y
+        apt install -y linux-headers-$(uname -r) build-essential
+        apt install -y kernel-mft-dkms-5.10.0-cl-1-amd64
+        /sbin/rcvboxadd setup
+        rcvboxadd reload
+        systemctl restart vboxadd.service
+        systemctl status vboxadd.service || {
+          echo "vboxadd.service status check failed. Please check the service manually."
+        }
+      SHELL
+      # Disable the default /vagrant shared folder
+      node.vm.synced_folder ".", "/vagrant", disabled: true
 
-        # Setup a custom shared folder; adjust the host path as needed
-        node.vm.synced_folder "./shared", "/vagrant",
-                              owner: "vagrant", group: "vagrant",
-                              mount_options: ["dmode=775,fmode=664"]
+      # Setup a custom shared folder; adjust the host path as needed
+      node.vm.synced_folder "./shared", "/vagrant",
+                            owner: "vagrant", group: "vagrant",
+                            mount_options: ["dmode=775,fmode=664"]
 
-        # Provisioning script to ensure the folder is correctly mounted
-        # This will run every time the VM is started
-        node.vm.provision "shell", inline: <<-SHELL
-          if mountpoint -q /vagrant; then
-            echo "/vagrant/ is already mounted."
-          else
-            echo "Mounting /vagrant/..."
-            sudo mount -t vboxsf -o uid=$(id -u vagrant),gid=$(getent group vagrant | cut -d: -f3),dmode=775,fmode=664 vagrant /vagrant
-          fi
-        SHELL
-      end
-
-      # Install VirtualBox Guest Additions for Debian
-      if ["vm01", "vm03"].include?(node_name)
-        node.vm.provision "shell", inline: <<-SHELL
-          apt update
-          apt install apt-utils -y
-          apt install -y linux-headers-$(uname -r) build-essential dkms
-          VBOX_ISO="/vagrant/VBoxGuestAdditions_7.0.14.iso"
-          mkdir -p /mnt/cdrom
-          chmod 700 /mnt/cdrom
-          mount -o loop $VBOX_ISO /mnt/cdrom
-          sh /mnt/cdrom/VBoxLinuxAdditions.run || echo "Failed to install Guest Additions. If everything else seems fine, you may ignore this."
-          umount /mnt/cdrom
-        SHELL
-      end
+      # Provisioning script to ensure the folder is correctly mounted
+      # This will run every time the VM is started
+      node.vm.provision "shell", inline: <<-SHELL
+        if mountpoint -q /vagrant; then
+          echo "/vagrant/ is already mounted."
+        else
+          echo "Mounting /vagrant/..."
+          sudo mount -t vboxsf -o uid=$(id -u vagrant),gid=$(getent group vagrant | cut -d: -f3),dmode=775,fmode=664 vagrant /vagrant
+        fi
+      SHELL
 
       # Disable the default shared folder 
       node.vm.synced_folder ".", "/vagrant", disabled: true
@@ -136,6 +125,28 @@ Vagrant.configure("2") do |config|
         mount_options: ["dmode=775,fmode=664"],
         automount: true,
         create: true
+#######
+
+####### This block creates a new user and copies the public key located in the shared directory  
+      node.vm.provision "shell", inline: <<-SHELL
+        # Variables
+        NEW_USER="nico" # Change this to the desired new username
+        SSH_KEY_PATH="/vagrant/id_ed25519.pub" # Adjust if your key's name/path is different
+        # Check if the user exists; if not, create the user and setup SSH
+        if ! id "$NEW_USER" &>/dev/null; then
+          echo "Creating user $NEW_USER..."
+          sudo useradd -m -s /bin/bash "$NEW_USER"
+          sudo mkdir -p /home/"$NEW_USER"/.ssh
+          sudo touch /home/"$NEW_USER"/.ssh/authorized_keys
+        fi
+        # Add the SSH key to authorized_keys
+        echo "Adding SSH key to $NEW_USER's authorized_keys..."
+        sudo sh -c "cat $SSH_KEY_PATH >> /home/$NEW_USER/.ssh/authorized_keys"
+        sudo chown -R $NEW_USER:$NEW_USER /home/$NEW_USER/.ssh
+        sudo chmod 700 /home/$NEW_USER/.ssh
+        sudo chmod 600 /home/$NEW_USER/.ssh/authorized_keys
+      SHELL
+#######
 
     end
   end
