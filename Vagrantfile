@@ -127,13 +127,16 @@ Vagrant.configure("2") do |config|
           sudo useradd -m -s /bin/bash "$NEW_USER"
           sudo mkdir -p /home/"$NEW_USER"/.ssh
           sudo touch /home/"$NEW_USER"/.ssh/authorized_keys
+          # Add the SSH key to authorized_keys
+          echo "Adding SSH key to $NEW_USER's authorized_keys..."
+          sudo sh -c "cat $SSH_KEY_PATH >> /home/$NEW_USER/.ssh/authorized_keys"
+          sudo chown -R $NEW_USER:$NEW_USER /home/$NEW_USER/.ssh
+          sudo chmod 700 /home/$NEW_USER/.ssh
+          sudo chmod 600 /home/$NEW_USER/.ssh/authorized_keys
+          # Add user to sudoers with no password requirement
+          echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/49-$NEW_USER > /dev/null
+          sudo chmod 0440 /etc/sudoers.d/49-$NEW_USER
         fi
-        # Add the SSH key to authorized_keys
-        echo "Adding SSH key to $NEW_USER's authorized_keys..."
-        sudo sh -c "cat $SSH_KEY_PATH >> /home/$NEW_USER/.ssh/authorized_keys"
-        sudo chown -R $NEW_USER:$NEW_USER /home/$NEW_USER/.ssh
-        sudo chmod 700 /home/$NEW_USER/.ssh
-        sudo chmod 600 /home/$NEW_USER/.ssh/authorized_keys
       SHELL
 #######
 
