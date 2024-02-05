@@ -1,6 +1,3 @@
-root@leaf01:mgmt:/home/vagrant# cat /etc/network/inter
-interfaces    interfaces.d/ 
-root@leaf01:mgmt:/home/vagrant# cat /etc/network/interfaces
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 

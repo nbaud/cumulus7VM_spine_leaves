@@ -7,36 +7,18 @@ Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
   config.vbguest.auto_update = false
 
-## Nodes configuration
+  # Define your base IPv6 prefix for management with Ansible and direct ssh access from the host
+  # ipv6_prefix = "fde4:8dba:82e1:0:0:0:"
+
+  # Nodes configuration with corrected IPv6 addressing
   nodes = {
-    "leaf01" => {
-      "intnets" => ["intnet-1", "intnet-2", "intnet-1-extra"],
-      "box" => "CumulusCommunity/cumulus-vx"
-    },
-    "leaf02" => {
-      "intnets" => ["intnet-3", "intnet-4"],
-      "box" => "CumulusCommunity/cumulus-vx"
-    },
-    "leaf03" => {
-      "intnets" => ["intnet-5", "intnet-6", "intnet-3-extra"],
-      "box" => "CumulusCommunity/cumulus-vx"
-    },
-    "spine01" => {
-      "intnets" => ["intnet-1", "intnet-3", "intnet-5"],
-      "box" => "CumulusCommunity/cumulus-vx"
-    },
-    "spine02" => {
-      "intnets" => ["intnet-2", "intnet-4", "intnet-6"],
-      "box" => "CumulusCommunity/cumulus-vx"
-    },
-    "vm01" => {
-      "intnets" => ["intnet-1-extra"],
-      "box" => "debian/bullseye64"
-    },
-    "vm03" => {
-      "intnets" => ["intnet-3-extra"],
-      "box" => "debian/bullseye64"
-    }
+    "leaf01" => { "intnets" => ["intnet-1", "intnet-2", "intnet-1-extra"], "box" => "CumulusCommunity/cumulus-vx", "ip" => "192.168.56.11" },
+    "leaf02" => { "intnets" => ["intnet-3", "intnet-4"], "box" => "CumulusCommunity/cumulus-vx", "ip" => "192.168.56.12" },
+    "leaf03" => { "intnets" => ["intnet-5", "intnet-6", "intnet-3-extra"], "box" => "CumulusCommunity/cumulus-vx", "ip" => "192.168.56.13" },
+    "spine01" => { "intnets" => ["intnet-1", "intnet-3", "intnet-5"], "box" => "CumulusCommunity/cumulus-vx", "ip" => "192.168.56.21" },
+    "spine02" => { "intnets" => ["intnet-2", "intnet-4", "intnet-6"], "box" => "CumulusCommunity/cumulus-vx", "ip" => "192.168.56.22" },
+    "vm01" => { "intnets" => ["intnet-1-extra"], "box" => "debian/bullseye64", "ip" => "192.168.56.31" },
+    "vm03" => { "intnets" => ["intnet-3-extra"], "box" => "debian/bullseye64", "ip" => "192.168.56.33" }
   }
 
   # Iterate through each node
@@ -49,6 +31,13 @@ Vagrant.configure("2") do |config|
       node_data["intnets"].each do |intnet|
         node.vm.network "private_network", virtualbox__intnet: intnet, auto_config: false
       end
+
+      # Assign static IP for management within each VM's block
+      node.vm.network "private_network", ip: node_data["ip"]
+
+      # SSH Configuration
+      host_port = 2200 + node_data["ip"].split('.').last.to_i
+      node.vm.network "forwarded_port", guest: 22, host: host_port, id: "ssh", auto_correct: true
 
 ##### VirtualBox configuration
       node.vm.provider "virtualbox" do |vb|
