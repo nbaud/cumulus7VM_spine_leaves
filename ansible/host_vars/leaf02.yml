@@ -1,0 +1,9 @@
+lo_address: 10.0.0.2/32
+interfaces:
+  - name: "swp1"
+    address: "10.1.2.1/30"
+    connected_to: "spine01"
+  - name: "swp2"
+    address: "10.2.2.1/30"
+    connected_to: "spine02"
+

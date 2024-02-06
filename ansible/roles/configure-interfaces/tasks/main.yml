@@ -1,0 +1,7 @@
+- name: Include spines interfaces configuration tasks
+  include_tasks: spines.yml
+  when: inventory_hostname in groups['spines']
+
+- name: Include leaves interfaces configuration tasks
+  include_tasks: leaves.yml
+  when: inventory_hostname in groups['leaves']

@@ -1,0 +1,7 @@
+---
+- name: Configure interfaces on Spine switches
+  hosts: all
+  become: yes
+  roles:
+    - configure-interfaces
+
