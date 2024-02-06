@@ -14,3 +14,21 @@ Requirements:
 * Vagrant 2.4.1 installed
 
 If the above is fine, you should be able to bring up and provision everything by just using "vagrant up" from the Vagrantfile directory.
+
+ssh with the current setup for checking on the machines through (ansible inventory file as well):
+
+for instance for leaf01, use: ssh -p 2211 localhost
+or for vm03: ssh -p 2233 localhost
+
+[leaves]
+leaf01 ansible_host=127.0.0.1 ansible_port=2211
+leaf02 ansible_host=127.0.0.1 ansible_port=2212
+leaf03 ansible_host=127.0.0.1 ansible_port=2213
+
+[spines]
+spine01 ansible_host=127.0.0.1 ansible_port=2221
+spine02 ansible_host=127.0.0.1 ansible_port=2222
+
+[vms]
+vm01 ansible_host=127.0.0.1 ansible_port=2231
+vm03 ansible_host=127.0.0.1 ansible_port=2233
