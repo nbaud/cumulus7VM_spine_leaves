@@ -1,6 +1,6 @@
 ---
 - name: restart networking
-  ansible.builtin.systemd:
+  systemd:
     name: networking
     state: restarted
   async: 10
@@ -9,5 +9,6 @@
 
 - name: Wait for system to become reachable
   wait_for_connection:
-    timeout: 60
+    timeout: 15
+
 

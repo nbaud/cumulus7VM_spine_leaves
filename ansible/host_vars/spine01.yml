@@ -1,3 +1,4 @@
+---
 lo_address: 10.1.0.1/32
 lo1_address: 10.1.10.2/32
 interfaces:

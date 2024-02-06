@@ -5,3 +5,7 @@
 - name: Include leaves interfaces configuration tasks
   include_tasks: leaves.yml
   when: inventory_hostname in groups['leaves']
+
+- name: Include vms interfaces configuration tasks
+  include_tasks: vms.yml
+  when: inventory_hostname in groups['vms']

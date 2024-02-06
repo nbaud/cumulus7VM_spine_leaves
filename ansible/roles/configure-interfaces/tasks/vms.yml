@@ -1,0 +1,27 @@
+---
+- name: Ensure eth1 configuration is set
+  ansible.builtin.blockinfile:
+    path: /etc/network/interfaces
+    marker: "### {mark} eth1 is ansible generated"
+    block: |
+      auto eth1
+      iface eth1 inet static
+            address {{ item.address }}
+            netmask {{ item.netmask }}
+            {% for route in item.routes %}
+            up ip route add {{ route.subnet }} via {{ item.gateway }}
+            {% endfor %}
+    backup: yes
+  loop: "{{ interfaces }}"
+
+- name: Flush all addresses on eth1
+  ansible.builtin.shell:
+    cmd: ip addr flush dev eth1
+  ignore_errors: true
+
+# had an issue as handler, setting it here
+- name: reload network interface
+  shell:
+    cmd: "ifdown eth1 || true; ifup eth1"
+  args:
+    executable: /bin/bash
