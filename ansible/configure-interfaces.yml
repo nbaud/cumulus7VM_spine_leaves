@@ -1,5 +1,5 @@
 ---
-- name: Configure interfaces on Spine switches
+- name: Configure interfaces
   hosts: all
   become: yes
   roles:
