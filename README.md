@@ -12,6 +12,7 @@ Done using the latest version of vagrant (2.4.1) and the latest version of Virtu
 
 Requirements:
 
+* Have a decent computer/laptop to be able to run 7 VM in total.
 * Change the user you want to add in the Vagrantfile.
 * Copy the relevant ssh public key file for that user into the "shared" directory (create it) that must be located in the directory where the Vagrantfile is.
 * Virtualbox version 7.0.14 installed
