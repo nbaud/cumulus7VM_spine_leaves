@@ -23,3 +23,9 @@ vnix:
     rt: 20
   - id: 10010
     rt: 10
+
+vlans:
+  - id: 10
+    vrf: choubidou
+  - id: 20
+    vrf: choubidou

@@ -4,7 +4,16 @@
     src: interfaces-leaves.j2
     dest: /etc/network/interfaces
   notify: restart networking
+  tags: no-vxlan
+
+- name: Configure leaves network interfaces for vxlan
+  template:
+    src: interfaces-leaves-vxlan.j2
+    dest: /etc/network/interfaces
+  notify:
+    - restart networking
+    - restart frr
+  tags: vxlan
 
 - name: Ensure networking is restarted
   meta: flush_handlers
-

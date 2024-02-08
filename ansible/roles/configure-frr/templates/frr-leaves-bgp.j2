@@ -1,6 +1,4 @@
-frr version 8.4.3
 frr defaults datacenter
-log syslog informational
 hostname {{ ansible_hostname }}
 service integrated-vtysh-config
 !
@@ -9,16 +7,6 @@ router ospf
  {% for network in ospf_networks %}
  network {{ network.subnet }} area 0
  {% endfor %}
-!
-interface lo
- ip pim
-!
-{% for interface in interfaces %}
-interface {{ interface.name }}
- ip pim
-!
-{% endfor %}
-ip pim rp {{ pim_rp_address }} {{ pim_rp_network }}
 !
 ! BGP Configuration for L2VPN EVPN
 router bgp {{ asn }}
@@ -29,16 +17,16 @@ router bgp {{ asn }}
  {% for spine in groups['spines'] %}
  neighbor {{ hostvars[spine].ospf_router_id }} peer-group TO_SPINES
  {% endfor %}
- !
+!
+ address-family ipv4 unicast
+  redistribute connected
+ exit-address-family
+!
  address-family l2vpn evpn
   neighbor TO_SPINES activate
   advertise-all-vni
-  {% for vni in vnix %}
-  vni {{ vni.id }}
-   route-target import {{ asn }}:{{ vni.rt }}
-   route-target export {{ asn }}:{{ vni.rt }}
-  exit-vni
-  {% endfor %}
-  advertise ipv4 unicast
+  advertise-svi-ip
  exit-address-family
- !
+!
+exit
+!
