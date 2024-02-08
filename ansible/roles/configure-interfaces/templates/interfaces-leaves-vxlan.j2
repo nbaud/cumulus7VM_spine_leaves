@@ -28,6 +28,9 @@ auto {{ interface.name }}
 iface {{ interface.name }} inet static
     address {{ interface.address }}
     mtu 9050
+{% if interface.vrf is defined %}
+vrf {{ interface.vrf}}
+{% endif %}
 {% endfor %}
 
 # Defining the choubidou vrf
@@ -43,6 +46,9 @@ iface vlan{{ vlan.id }}
     vlan-raw-device vmbr0
     mtu 9050
     vrf choubidou
+{%   if vlan.ip is defined %}
+    address {{ vlan.ip }}
+{%   endif %}
 {% endfor %}
 
 # VXLAN configurations

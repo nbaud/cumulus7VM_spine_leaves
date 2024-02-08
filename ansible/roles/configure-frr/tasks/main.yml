@@ -17,3 +17,8 @@
   include_tasks: leaves.yml
   when: inventory_hostname in groups['leaves']
   tags: BGP
+
+- name: Include leaves frr configuration tasks for BGP
+  include_tasks: leaves.yml
+  when: inventory_hostname in groups['leaves']
+  tags: vxlan

@@ -46,3 +46,12 @@
   notify: restart frr
   tags: BGP
 ### BGP
+
+### vxlan
+- name: Configure vxlans
+  template:
+    src: frr-leaves-bgp-vxlan.j2
+    dest: /etc/frr/frr.conf
+  notify: restart frr
+  tags: vxlan
+###
