@@ -4,7 +4,6 @@
   include_tasks: vms.yml
   when: inventory_hostname in groups['vms']
 
-
 ## Config without VXLAN
 ## Spines don't have VXLAN config anyway, so it's fine
 - name: Include spines interfaces configuration tasks
@@ -14,7 +13,7 @@
 - name: Include leaves interfaces configuration tasks
   include_tasks: leaves.yml
   when: inventory_hostname in groups['leaves']
-  tags: no_vxlan
+  tags: no-vxlan
 
 ## Config with VXLAN for the leaves
 

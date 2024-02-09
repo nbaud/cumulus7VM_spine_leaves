@@ -33,10 +33,14 @@ vrf {{ interface.vrf}}
 {% endif %}
 {% endfor %}
 
-# Defining the choubidou vrf
-auto choubidou
-iface choubidou
+# Defining the vrfs
+{% if vrfs[0] is defined %}
+{% for vrf in vrfs %}
+auto {{ vrf.id }}
+iface {{ vrf.id }}
     vrf-table auto
+{%   endfor %}    
+{%   endif %}
 
 # VLAN configurations
 {% for vlan in vlans %}
@@ -45,7 +49,9 @@ iface vlan{{ vlan.id }}
     vlan-id {{ vlan.id }}
     vlan-raw-device vmbr0
     mtu 9050
-    vrf choubidou
+{%   if vlan.vrf is defined %}
+    vrf {{ vlan.vrf }}
+{%   endif %}
 {%   if vlan.ip is defined %}
     address {{ vlan.ip }}
 {%   endif %}

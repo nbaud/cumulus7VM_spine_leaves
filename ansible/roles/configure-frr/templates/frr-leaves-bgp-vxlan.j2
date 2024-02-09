@@ -2,6 +2,7 @@ frr defaults datacenter
 hostname {{ ansible_hostname }}
 service integrated-vtysh-config
 !
+{% if vrfs[0] is defined %}
 {% for vrf in vrfs %}
 {% if vrf.vni is defined %}
 vrf {{ vrf.id }}
@@ -9,6 +10,7 @@ vrf {{ vrf.id }}
 exit-vrf
 {% endif %}
 {% endfor %}
+{% endif %}
 !
 router ospf
  ospf router-id {{ ospf_router_id }}
@@ -38,16 +40,20 @@ router bgp {{ asn }}
 !
 exit
 !
+{% if vrfs[0] is defined %}
 {% for vrf in vrfs %}
 router bgp {{ asn }} vrf {{ vrf.id }}
 !
- address-family ipv4 unicast
-  redistribute connected
- exit-address-family
+address-family ipv4 unicast
+ redistribute connected
+exit-address-family
 !
- address-family l2vpn evpn
+address-family l2vpn evpn
  advertise ipv4 unicast
- exit-address-family
+exit-address-family
 !
 {% endfor %}
+{% endif %}
+!
+exit
 !

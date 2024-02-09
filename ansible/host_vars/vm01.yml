@@ -6,6 +6,7 @@ interfaces:
     connected_to: "leaf01"
     gateway: "10.0.10.1"
     routes:
+    - subnet: "10.0.20.0/24"
     - subnet: "10.0.30.0/24"
     - subnet: "10.1.0.0/16"
     - subnet: "10.2.0.0/16"
