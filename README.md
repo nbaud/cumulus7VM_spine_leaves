@@ -1,5 +1,5 @@
 # cumulus8VM_spine_leaves
-Deploy 8 VM (3 leaves and 2 spines using the latest Cumulus VX vagrant image and 3 regular Debians 12 for testing a spine and leaf architecture with OSPF, BGP, EVPN and VXLAN with VRF, incrementally.
+Deploy 8 VM (3 `leaves` and 2 `spines` using the latest `Cumulus VX` vagrant image and 3 regular `Debian 12` (`bookworm`) for testing a spine and leaf architecture with `OSPF`, `BGP`, `EVPN` and `VXLAN` with `VRF`, incrementally.
 
 Provisioned with Vagrant:
 * 3x leaves with cumulus VX
