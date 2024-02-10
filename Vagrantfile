@@ -9,14 +9,14 @@ Vagrant.configure("2") do |config|
 
   # Nodes configuration
   nodes = {
-    "leaf01" => { "intnets" => ["intnet-1", "intnet-2", "intnet-1-extra"], "box" => "CumulusCommunity/cumulus-vx", "ssh_id" => "11" },
-    "leaf02" => { "intnets" => ["intnet-3", "intnet-4", "intnet-2-extra"], "box" => "CumulusCommunity/cumulus-vx", "ssh_id" => "12" },
-    "leaf03" => { "intnets" => ["intnet-5", "intnet-6", "intnet-3-extra"], "box" => "CumulusCommunity/cumulus-vx", "ssh_id" => "13" },
+    "leaf01" => { "intnets" => ["intnet-1", "intnet-2", "intnet-1-extra", "intnet-2-extra"], "box" => "CumulusCommunity/cumulus-vx", "ssh_id" => "11" },
+    "leaf02" => { "intnets" => ["intnet-3", "intnet-4", "intnet-3-extra", "intnet-4-extra"], "box" => "CumulusCommunity/cumulus-vx", "ssh_id" => "12" },
+    "leaf03" => { "intnets" => ["intnet-5", "intnet-6", "intnet-5-extra", "intnet-6-extra"], "box" => "CumulusCommunity/cumulus-vx", "ssh_id" => "13" },
     "spine01" => { "intnets" => ["intnet-1", "intnet-3", "intnet-5"], "box" => "CumulusCommunity/cumulus-vx", "ssh_id" => "21" },
     "spine02" => { "intnets" => ["intnet-2", "intnet-4", "intnet-6"], "box" => "CumulusCommunity/cumulus-vx", "ssh_id" => "22" },
-    "vm01" => { "intnets" => ["intnet-1-extra"], "box" => "debian/bullseye64", "ssh_id" => "31" },
-    "vm02" => { "intnets" => ["intnet-2-extra"], "box" => "debian/bullseye64", "ssh_id" => "32" },
-    "vm03" => { "intnets" => ["intnet-3-extra"], "box" => "debian/bullseye64", "ssh_id" => "33" }
+    "vm01" => { "intnets" => ["intnet-1-extra", "intnet-2-extra"], "box" => "debian/bookworm64", "ssh_id" => "31" },
+    "vm02" => { "intnets" => ["intnet-3-extra", "intnet-4-extra"], "box" => "debian/bookworm64", "ssh_id" => "32" },
+    "vm03" => { "intnets" => ["intnet-5-extra", "intnet-6-extra"], "box" => "debian/bookworm64", "ssh_id" => "33" }
   }
 
   # Iterate through each node
@@ -62,25 +62,13 @@ Vagrant.configure("2") do |config|
         chmod 700 /home/vagrant/.ssh
         # Update apt repositories
         apt update
+        apt upgrade -y
         # Setting up the locales otherwise ansible doesn't work fine from the get-go 
         sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen
         locale-gen en_US.UTF-8
         update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
       SHELL
 #####
-
-##### Install VirtualBox Guest Additions provisioning and shared directory only for the cumulus
-      node.vm.provision "shell", inline: <<-SHELL
-        apt install apt-utils -y
-        apt install -y linux-headers-$(uname -r) build-essential
-        apt install -y kernel-mft-dkms-5.10.0-cl-1-amd64
-        /sbin/rcvboxadd setup
-        rcvboxadd reload
-        systemctl restart vboxadd.service
-        systemctl status vboxadd.service || {
-          echo "vboxadd.service status check failed. Please check the service manually."
-        }
-      SHELL
 
       # Disable the default /vagrant shared folder
       node.vm.synced_folder ".", "/vagrant", disabled: true
