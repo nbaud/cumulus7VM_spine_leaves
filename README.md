@@ -32,16 +32,16 @@ Copy from the inventory file:
 ```yml
 ---
 [leaves]
-leaf01 ansible_host=127.0.0.1 ansible_port=2211
-leaf02 ansible_host=127.0.0.1 ansible_port=2212
-leaf03 ansible_host=127.0.0.1 ansible_port=2213
+leaf01 ansible_host=localhost ansible_port=2211
+leaf02 ansible_host=localhost ansible_port=2212
+leaf03 ansible_host=localhost ansible_port=2213
 
 [spines]
-spine01 ansible_host=127.0.0.1 ansible_port=2221
-spine02 ansible_host=127.0.0.1 ansible_port=2222
+spine01 ansible_host=localhost ansible_port=2221
+spine02 ansible_host=localhost ansible_port=2222
 
 [vms]
-vm01 ansible_host=127.0.0.1 ansible_port=2231
-vm02 ansible_host=127.0.0.1 ansible_port=2232
-vm03 ansible_host=127.0.0.1 ansible_port=2233
+vm01 ansible_host=localhost ansible_port=2231
+vm02 ansible_host=localhost ansible_port=2232
+vm03 ansible_host=localhost ansible_port=2233
 ```
