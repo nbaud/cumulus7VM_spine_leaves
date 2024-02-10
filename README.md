@@ -14,7 +14,7 @@ Requirements:
 
 * Have a decent computer/laptop to be able to run 8 VM in total.
 * Change the user you want to add in the Vagrantfile.
-* Copy the relevant ssh public key file for that user into the "shared" directory (create it) that must be located in the directory where the Vagrantfile is.
+* Copy the relevant ssh public key file for that user into the `shared` directory (create it) that must be located in the directory where the Vagrantfile is.
 * `VirtualBox 7.0.14` installed
 * `Vagrant 2.4.1` installed (please also run `vagrant plugin install vagrant-vbguest` for better compatibility with functions like file-sharing with Virtualbox)
 * `Python` installed (if you want to use Ansible)
