@@ -16,7 +16,6 @@
   tags: no-vxlan
 
 ## Config with VXLAN for the leaves
-
 - name: Include leaves interfaces configuration tasks
   include_tasks: leaves.yml
   when: inventory_hostname in groups['leaves']

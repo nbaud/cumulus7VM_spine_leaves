@@ -62,6 +62,7 @@ Vagrant.configure("2") do |config|
         chmod 700 /home/vagrant/.ssh
         # Update apt repositories
         apt update
+        apt install apt-utils -y
         apt upgrade -y
         # Setting up the locales otherwise ansible doesn't work fine from the get-go 
         sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen
