@@ -20,25 +20,27 @@
     regexp: '^pimd='
     line: 'pimd=yes'
   tags: OSPF, BGP,vxlan
-### OSPF
+### OSPFd
 
-### OSPF
+### OSPFd
 - name: Configure FRR for OSPF and PIM
   template:
     src: frr-leaves-ospf.j2
     dest: /etc/frr/frr.conf
   notify: restart frr
   tags: OSPF
-### OSPF
+### OSPFd
 
-### BGP
+### BGP daemon
 - name: Enable BGP daemon
   lineinfile:
     path: /etc/frr/daemons
     regexp: '^bgpd='
     line: 'bgpd=yes'
   tags: BGP,vxlan
+### BGP daemon
 
+### BGP
 - name: Configure FRR for BGP
   template:
     src: frr-leaves-bgp.j2
