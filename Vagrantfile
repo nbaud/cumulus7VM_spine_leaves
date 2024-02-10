@@ -70,6 +70,23 @@ Vagrant.configure("2") do |config|
       SHELL
 #####
 
+####### IF YOU DON'T RUN (PLEASE JUST DO IT)
+####### vagrant plugin install vagrant-vbguest
+####### IN YOUR VAGRANTFILE DIRECTORY YOU WILL HAVE TO UNCOMMENT THE STUFF BELOW AND IT ADDS SOME EXTRA TIME FOR LAUNCHING VMS
+# ##### Install VirtualBox Guest Additions provisioning and shared directory only for the cumulus
+#       node.vm.provision "shell", inline: <<-SHELL
+#         apt install apt-utils -y
+#         apt install -y linux-headers-$(uname -r) build-essential
+#         apt install -y kernel-mft-dkms-5.10.0-cl-1-amd64
+#         /sbin/rcvboxadd setup
+#         rcvboxadd reload
+#         systemctl restart vboxadd.service
+#         systemctl status vboxadd.service || {
+#           echo "vboxadd.service status check failed. Please check the service manually."
+#         }
+#       SHELL
+#######
+
       # Disable the default /vagrant shared folder
       node.vm.synced_folder ".", "/vagrant", disabled: true
 
