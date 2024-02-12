@@ -76,7 +76,6 @@ Vagrant.configure("2") do |config|
 ####### IN YOUR VAGRANTFILE DIRECTORY YOU WILL HAVE TO UNCOMMENT THE STUFF BELOW AND IT ADDS SOME EXTRA TIME FOR LAUNCHING VMS
 # ##### Install VirtualBox Guest Additions provisioning and shared directory only for the cumulus
 #       node.vm.provision "shell", inline: <<-SHELL
-#         apt install apt-utils -y
 #         apt install -y linux-headers-$(uname -r) build-essential
 #         apt install -y kernel-mft-dkms-5.10.0-cl-1-amd64
 #         /sbin/rcvboxadd setup
