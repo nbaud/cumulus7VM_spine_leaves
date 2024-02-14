@@ -1,5 +1,4 @@
 ## Config for VM only
-
 - name: Include vms interfaces configuration tasks
   include_tasks: vms.yml
   when: inventory_hostname in groups['vms']

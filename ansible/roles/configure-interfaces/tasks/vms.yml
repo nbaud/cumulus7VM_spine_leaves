@@ -1,24 +1,49 @@
 ---
-- name: Ensure eth1 configuration is set
-  ansible.builtin.blockinfile:
+- name: Ensure network interfaces configuration is set
+  blockinfile:
     path: /etc/network/interfaces
-    marker: "### {mark} eth1 is ansible generated"
+    marker: "### {mark} {{ item.name }} is ansible generated"
     block: |
-      auto eth1
-      iface eth1 inet static
+      auto {{ item.name }}
+      iface {{ item.name }} inet static
             address {{ item.address }}
             netmask {{ item.netmask }}
+            {% if item.gateway %}
+            gateway {{ item.gateway }}
+            {% endif %}
             {% for route in item.routes %}
             up ip route add {{ route.subnet }} via {{ item.gateway }}
             {% endfor %}
     backup: yes
   loop: "{{ interfaces }}"
 
-- name: Flush all addresses on eth1
+- name: Flush addresses on network interfaces
   shell:
-    cmd: ip addr flush dev eth1
+    cmd: ip addr flush dev {{ item.name }}
+  loop: "{{ interfaces }}"
   ignore_errors: true
   notify: restart networking
+
+# - name: Ensure eth1 configuration is set
+#   blockinfile:
+#     path: /etc/network/interfaces
+#     marker: "### {mark} eth1 is ansible generated"
+#     block: |
+#       auto eth1
+#       iface eth1 inet static
+#             address {{ item.address }}
+#             netmask {{ item.netmask }}
+#             {% for route in item.routes %}
+#             up ip route add {{ route.subnet }} via {{ item.gateway }}
+#             {% endfor %}
+#     backup: yes
+#   loop: "{{ interfaces }}"
+
+# - name: Flush all addresses on eth1
+#   shell:
+#     cmd: ip addr flush dev eth1
+#   ignore_errors: true
+#   notify: restart networking
 
 # had an issue as handler, setting it here
 # - name: reload network interface

@@ -10,6 +10,10 @@ interfaces:
     address: "10.0.10.1/30"
     connected_to: "vm01"
     vrf: choubidou
+  - name: "swp4"
+    address: "10.0.11.1/30"
+    connected_to: "vm01"
+    vrf: choubidou2
 
 ospf_router_id: 10.0.0.1
 ospf_networks:
@@ -17,20 +21,20 @@ ospf_networks:
   - subnet: "10.1.1.0/30"
   - subnet: "10.2.1.0/30"
   - subnet: "10.0.10.0/30"
+  - subnet: "10.0.11.0/30"
 
 vnix:
   - id: 10020
     rt: 20
-  - id: 10010
-    rt: 10
   - id: 10040
     rt: 40
 
 vlans:
   - id: 10
-    vrf: choubidou
+    ip: "10.1.111.1/24"
+    vrf: choubidou2
   - id: 20
-    vrf: choubidou
+    vrf: choubidou2
   - id: 30
     ip: "10.1.110.1/24"
     vrf: choubidou
@@ -40,3 +44,5 @@ vlans:
 vrfs:
   - id: choubidou
     vni: 10040
+  - id: choubidou2
+    vni: 10020

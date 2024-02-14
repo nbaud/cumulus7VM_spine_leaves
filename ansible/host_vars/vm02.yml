@@ -11,5 +11,13 @@ interfaces:
     - subnet: "10.1.0.0/16"
     - subnet: "10.2.0.0/16"
     - subnet: "10.1.130.0/24"
+    - subnet: "10.1.120.0/24"
     - subnet: "10.1.110.0/24"
-
+  - name: "eth2"
+    address: "10.0.21.2"
+    netmask: "255.255.255.252"
+    connected_to: "leaf02"
+    gateway: "10.0.21.1"
+    routes:
+    - subnet: "10.1.120.0/24"
+    - subnet: "10.1.110.0/24"
