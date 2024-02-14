@@ -1,28 +1,56 @@
 ---
-- name: Ensure network interfaces configuration is set
-  blockinfile:
-    path: /etc/network/interfaces
-    marker: "### {mark} {{ item.name }} is ansible generated"
-    block: |
-      auto {{ item.name }}
-      iface {{ item.name }} inet static
-            address {{ item.address }}
-            netmask {{ item.netmask }}
-            {% if item.gateway %}
-            gateway {{ item.gateway }}
-            {% endif %}
-            {% for route in item.routes %}
-            up ip route add {{ route.subnet }} via {{ item.gateway }}
-            {% endfor %}
-    backup: yes
-  loop: "{{ interfaces }}"
+# - name: Ensure network interfaces configuration is set
+#   blockinfile:
+#     path: /etc/network/interfaces
+#     marker: "### {mark} {{ item.name }} is ansible generated"
+#     block: |
+#       auto {{ item.name }}
+#       iface {{ item.name }} inet static
+#             address {{ item.address }}
+#             netmask {{ item.netmask }}
+#       {% if item.gateway %}
+#             gateway {{ item.gateway }}
+#       {% endif %}
+#       {% for route in item.routes %}
+#             up ip route add {{ route.subnet }} via {{ item.gateway }}
+#       {% endfor %}
+#     backup: yes
+#   loop: "{{ interfaces }}"
 
-- name: Flush addresses on network interfaces
-  shell:
-    cmd: ip addr flush dev {{ item.name }}
-  loop: "{{ interfaces }}"
-  ignore_errors: true
-  notify: restart networking
+- name: Configure vm network interfaces
+  template:
+    src: interfaces-vms.j2
+    dest: /etc/network/interfaces
+  register: interfaces_rendered
+
+# Assuming this task succeeds and the file is correctly placed
+
+- name: Slurp the content of /etc/network/interfaces
+  slurp:
+    src: /etc/network/interfaces
+  register: slurped_interfaces
+
+- name: Display the content of /etc/network/interfaces
+  debug:
+    msg: "{{ slurped_interfaces['content'] | b64decode }}"
+
+- name: Ensure ifupdown2 is installed
+  ansible.builtin.apt:
+    name: ifupdown2
+    state: present
+  become: yes
+
+- name: Reconfigure network interfaces
+  block:
+    - name: Attempt to bring down and then up the interface
+      shell: ifdown {{ item.name }} && ifup {{ item.name }}
+      loop: "{{ interfaces }}"
+      ignore_errors: yes
+
+    - name: Ensure the interface is up
+      shell: ifup {{ item.name }}
+      loop: "{{ interfaces }}"
+      ignore_errors: yes
 
 # - name: Ensure eth1 configuration is set
 #   blockinfile:
