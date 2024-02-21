@@ -19,19 +19,19 @@
   slurp:
     src: /etc/network/interfaces
   register: slurped_interfaces
-  tags: vrf-no-rm
+  tags: vrf-no-rm,basic
 
 - name: Display the content of /etc/network/interfaces
   debug:
     msg: "{{ slurped_interfaces['content'] | b64decode }}"
-  tags: vrf-no-rm
+  tags: vrf-no-rm,basic
 
 - name: Ensure ifupdown2 is installed
   ansible.builtin.apt:
     name: ifupdown2
     state: present
   become: yes
-  tags: vrf-no-rm
+  tags: vrf-no-rm,basic
 
 - name: Reconfigure network interfaces
   block:
@@ -47,4 +47,4 @@
       shell: ifup {{ item.name }}
       loop: "{{ interfaces }}"
       ignore_errors: yes
-  tags: vrf-no-rm
+  tags: vrf-no-rm,basic
