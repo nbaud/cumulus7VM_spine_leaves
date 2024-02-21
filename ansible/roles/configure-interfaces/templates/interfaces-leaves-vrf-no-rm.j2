@@ -22,7 +22,7 @@ iface mgmt
     address ::1/128
     vrf-table auto
 
-{% for interface in interfaces %}
+{% for interface in vnrm_interfaces %}
 # Interface connected to {{ interface.connected_to }}
 auto {{ interface.name }}
 iface {{ interface.name }} inet static
@@ -34,8 +34,8 @@ vrf {{ interface.vrf}}
 {% endfor %}
 
 # Defining the vrfs
-{% if vrfs[0] is defined %}
-{% for vrf in vrfs %}
+{% if vnrm_vrfs[0] is defined %}
+{% for vrf in vnrm_vrfs %}
 auto {{ vrf.id }}
 iface {{ vrf.id }}
     vrf-table auto
@@ -43,7 +43,7 @@ iface {{ vrf.id }}
 {%   endif %}
 
 # VLAN configurations
-{% for vlan in vlans %}
+{% for vlan in vnrm_vlans %}
 auto vlan{{ vlan.id }}
 iface vlan{{ vlan.id }}
     vlan-id {{ vlan.id }}
@@ -58,7 +58,7 @@ iface vlan{{ vlan.id }}
 {% endfor %}
 
 # VXLAN configurations
-{% for vxlan in vnix %}
+{% for vxlan in vnrm_vnix %}
 auto vxlan{{ vxlan.id }}
 iface vxlan{{ vxlan.id }}
     bridge-access {{ vxlan.rt }}
@@ -71,8 +71,8 @@ iface vxlan{{ vxlan.id }}
 # One bridge to rule them all
 auto vmbr0
 iface vmbr0
-    bridge-ports {{ vnix | map(attribute='id') | map('regex_replace', '^', 'vxlan') | join(' ') }}
-    bridge-vids {{ vnix | map(attribute='id') | join(' ') }}
+    bridge-ports {{ vnrm_vnix | map(attribute='id') | map('regex_replace', '^', 'vxlan') | join(' ') }}
+    bridge-vids {{ vnrm_vnix | map(attribute='id') | join(' ') }}
     bridge-stp off
     bridge-vlan-aware yes
     mtu 9050

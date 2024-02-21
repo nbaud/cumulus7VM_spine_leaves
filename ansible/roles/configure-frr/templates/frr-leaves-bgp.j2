@@ -3,7 +3,7 @@ hostname {{ ansible_hostname }}
 service integrated-vtysh-config
 !
 router ospf
- ospf router-id {{ ospf_router_id }}
+ ospf router-id {{ router_id }}
  {% for network in ospf_networks %}
  network {{ network.subnet }} area 0
  {% endfor %}
@@ -15,7 +15,7 @@ router bgp {{ asn }}
  neighbor TO_SPINES update-source lo
  neighbor TO_SPINES capability extended-nexthop
  {% for spine in groups['spines'] %}
- neighbor {{ hostvars[spine].ospf_router_id }} peer-group TO_SPINES
+ neighbor {{ hostvars[spine].router_id }} peer-group TO_SPINES
  {% endfor %}
 !
  address-family ipv4 unicast

@@ -2,11 +2,16 @@ frr defaults datacenter
 hostname {{ ansible_hostname }}
 service integrated-vtysh-config
 !
-{% if vrfs[0] is defined %}
-{% for vrf in vrfs %}
+{% if seg_vrfs[0] is defined %}
+{% for vrf in seg_vrfs %}
 {% if vrf.vni is defined %}
 vrf {{ vrf.id }}
  vni {{ vrf.vni }}
+exit-vrf
+{% endif %}
+{% if vrf.target_vrf is defined %}
+vrf {{ vrf.target_vrf.id }}
+ vni {{ vrf.target_vrf.vni }}
 exit-vrf
 {% endif %}
 {% endfor %}
@@ -18,7 +23,7 @@ router ospf
  network {{ network.subnet }} area 0
  {% endfor %}
 !
-! BGP Configuration for L2VPN EVPN
+! BGP Configuration for L2VPN EVPN with the spines
 router bgp {{ asn }}
  neighbor TO_SPINES peer-group
  neighbor TO_SPINES remote-as {{ asn }}
@@ -40,23 +45,21 @@ router bgp {{ asn }}
 !
 exit
 !
-{% if vrfs[0] is defined %}
-{% for vrf in vrfs %}
+{% if seg_vrfs[0] is defined %}
+{% for vrf in seg_vrfs %}
+!
 router bgp {{ asn }} vrf {{ vrf.id }}
 !
-address-family ipv4 unicast
- redistribute connected
-{% if leaking %}
- import vrf {{ vrf.vrf_to_leak }}
-{% endif %}
-exit-address-family
+ address-family ipv4 unicast
+  redistribute connected
+  route-target import {{ asn }}:{{ vrf.target_vrf.rt }}
+  route-target export {{ asn }}:{{ vrf.rt }}
+ exit-address-family
 !
-address-family l2vpn evpn
- advertise ipv4 unicast
-exit-address-family
-!
-{% endfor %}
-{% endif %}
-!
+ address-family l2vpn evpn
+  advertise ipv4 unicast
+ exit-address-family
 exit
+{% endfor %}
 !
+{% endif %}

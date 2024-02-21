@@ -6,7 +6,7 @@ interfaces:
   - { name: "swp2", address: "10.1.2.2/30" }
   - { name: "swp3", address: "10.1.3.2/30" }
 
-ospf_router_id: 10.1.0.1
+router_id: 10.1.0.1
 ospf_networks:
   - subnet: "10.1.0.1/32"
   - subnet: "10.1.1.0/30"

@@ -1,4 +1,4 @@
-# roles/configure-interfaces/templates/interfaces-leaves-vxlan.j2
+# roles/configure-interfaces/templates/interfaces-vrf.j2
 
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
@@ -22,28 +22,33 @@ iface mgmt
     address ::1/128
     vrf-table auto
 
-{% for interface in interfaces %}
+{% for interface in seg_vrfs_interfaces %}
 # Interface connected to {{ interface.connected_to }}
 auto {{ interface.name }}
 iface {{ interface.name }} inet static
     address {{ interface.address }}
     mtu 9050
 {% if interface.vrf is defined %}
-vrf {{ interface.vrf}}
+    vrf {{ interface.vrf}}
 {% endif %}
 {% endfor %}
 
 # Defining the vrfs
-{% if vrfs[0] is defined %}
-{% for vrf in vrfs %}
+{% if seg_vrfs[0] is defined %}
+{% for vrf in seg_vrfs %}
 auto {{ vrf.id }}
 iface {{ vrf.id }}
     vrf-table auto
-{%   endfor %}    
+{% if vrf.target_vrf is defined %}
+auto {{ vrf.target_vrf.id }}
+iface {{ vrf.target_vrf.id }}
+    vrf-table auto
+{% endif %}
+{%   endfor %}
 {%   endif %}
 
 # VLAN configurations
-{% for vlan in vlans %}
+{% for vlan in seg_vrfs_vlans %}
 auto vlan{{ vlan.id }}
 iface vlan{{ vlan.id }}
     vlan-id {{ vlan.id }}
@@ -58,7 +63,7 @@ iface vlan{{ vlan.id }}
 {% endfor %}
 
 # VXLAN configurations
-{% for vxlan in vnix %}
+{% for vxlan in seg_vrfs_vnix %}
 auto vxlan{{ vxlan.id }}
 iface vxlan{{ vxlan.id }}
     bridge-access {{ vxlan.rt }}
@@ -71,8 +76,8 @@ iface vxlan{{ vxlan.id }}
 # One bridge to rule them all
 auto vmbr0
 iface vmbr0
-    bridge-ports {{ vnix | map(attribute='id') | map('regex_replace', '^', 'vxlan') | join(' ') }}
-    bridge-vids {{ vnix | map(attribute='id') | join(' ') }}
+    bridge-ports {{ seg_vrfs_vnix | map(attribute='id') | map('regex_replace', '^', 'vxlan') | join(' ') }}
+    bridge-vids {{ seg_vrfs_vnix | map(attribute='id') | join(' ') }}
     bridge-stp off
     bridge-vlan-aware yes
     mtu 9050
