@@ -1,5 +1,5 @@
 ---
-### OSPF daemons
+### OSPF/BGP daemons
 - name: Enable OSPF daemon
   lineinfile:
     path: /etc/frr/daemons
@@ -10,4 +10,9 @@
     path: /etc/frr/daemons
     regexp: '^ospf6d='
     line: 'ospf6d=yes'
+- name: Enable BGP daemon
+  lineinfile:
+    path: /etc/frr/daemons
+    regexp: '^bgpd='
+    line: 'bgpd=yes'
 ### daemons end

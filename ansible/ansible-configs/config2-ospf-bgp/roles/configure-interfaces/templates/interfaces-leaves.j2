@@ -1,4 +1,4 @@
-# /templates/interfaces-spines.j2
+# /templates/interfaces-leaves.j2
 
 source /etc/network/interfaces.d/*.intf
 
@@ -19,8 +19,10 @@ iface mgmt
     vrf-table auto
 
 {% for interface in interfaces %}
+# Interface connected to {{ interface.connected_to }}
 auto {{ interface.name }}
 iface {{ interface.name }} inet static
     address {{ interface.address }}
     mtu 9050
 {% endfor %}
+

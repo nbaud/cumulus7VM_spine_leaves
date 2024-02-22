@@ -7,6 +7,13 @@ auto lo
 iface lo inet static
     address {{ lo_address }}
 
+# The loopback for RP and PIM
+auto lo1
+iface lo1 inet static
+    pre-up ip link add lo1 type dummy
+    post-down ip link delete lo1 type dummy
+    address {{ lo1_address }}
+
 # The primary network interface
 auto eth0
 iface eth0 inet dhcp
