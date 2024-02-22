@@ -3,7 +3,3 @@
   template:
     src: interfaces-spines.j2
     dest: /etc/network/interfaces
-  notify: ifreload
-
-- name: Ensure networking is restarted
-  meta: flush_handlers
