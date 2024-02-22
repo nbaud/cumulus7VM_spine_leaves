@@ -1,0 +1,9 @@
+---
+
+### OSPF
+- name: Configure FRR for OSPF and PIM
+  template:
+    src: frr-spines-ospf.j2
+    dest: /etc/frr/frr.conf
+  notify: restart frr
+### OSPF

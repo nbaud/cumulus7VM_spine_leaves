@@ -1,0 +1,9 @@
+---
+- name: Configure vm network interfaces
+  template:
+    src: interfaces-vms.j2
+    dest: /etc/network/interfaces
+  notify: ifreload
+
+- name: Ensure networking is restarted
+  meta: flush_handlers

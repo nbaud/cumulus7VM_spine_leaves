@@ -60,11 +60,7 @@ Vagrant.configure("2") do |config|
         mkdir -p /home/vagrant/.ssh
         chown -R vagrant:vagrant /home/vagrant/.ssh
         chmod 700 /home/vagrant/.ssh
-        # Update apt repositories
-        apt update
         apt install apt-utils -y
-        apt upgrade -y
-        apt install ifupdown2 -y
         # Setting up the locales otherwise ansible doesn't work fine from the get-go 
         sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen
         locale-gen en_US.UTF-8

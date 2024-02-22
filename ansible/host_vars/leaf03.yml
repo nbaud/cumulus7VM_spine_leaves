@@ -87,6 +87,8 @@ vnrm_vrfs:
   - id: vrfB
     vni: 10020
     vrf_to_leak: vrfD
+
+leaking: yes
 ### End of Segmented VRF variables with multiple leaking configs without route-maps (with --tags vrf-no-rm)
 
 ### Segmented VRF variables (with --tags vrf)
