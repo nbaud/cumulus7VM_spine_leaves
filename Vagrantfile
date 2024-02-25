@@ -1,4 +1,4 @@
-#### Current version optimised for virtualbox 7.0.14 with guest addition
+#### Current version optimised for virtualbox 7.0.14 (please run 'vagrant plugin install vagrant-vbguest' without '' in the Vagrantfile directory first)
 
 Vagrant.configure("2") do |config|
 
@@ -138,6 +138,15 @@ Vagrant.configure("2") do |config|
       SHELL
 #######
 
+      # ##### Ansible provisioning for the last machine or when ANSIBLE_QUICK is not set > for the updates/upgrades in parallel
+      # if node_name == nodes.keys.last || !ENV['ANSIBLE_QUICK']
+      #   node.vm.provision :ansible do |ansible|
+      #     ansible.compatibility_mode = '2.0'
+      #     ansible.playbook = 'ansible/upgrade.yml'
+      #     ansible.limit = 'all' if ENV['ANSIBLE_QUICK']
+      #   end
+      # end
+      # #####
     end
   end
 end

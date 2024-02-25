@@ -1,0 +1,22 @@
+// Network Diagram
+digraph {
+	rankdir=LR
+	splines=ortho
+	node [fillcolor=lightgrey shape=rectangle style=filled]
+	S1 [label="spine01
+10.1.0.1/32"]
+	S2 [label="spine02
+10.1.0.2/32"]
+	L1 [label="leaf01
+10.0.0.1/32"]
+	L2 [label="leaf02
+10.0.0.2/32"]
+	L3 [label="leaf03
+10.0.0.3/32"]
+{rank=same; S1; S2}{rank=same; L1; L2; L3}	L1 -> S1 [label="10.1.1.1/30\n10.1.1.2/30" dir=none]
+	L1 -> S2 [label="10.2.1.1/30\n10.2.1.2/30" dir=none]
+	L2 -> S1 [label="10.1.2.1/30\n10.1.2.2/30" dir=none]
+	L2 -> S2 [label="10.2.2.1/30\n10.2.2.2/30" dir=none]
+	L3 -> S1 [label="10.1.3.1/30\n10.1.3.2/30" dir=none]
+	L3 -> S2 [label="10.2.3.1/30\n10.2.3.2/30" dir=none]
+}
