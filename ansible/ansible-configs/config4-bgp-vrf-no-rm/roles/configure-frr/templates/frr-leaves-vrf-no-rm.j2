@@ -49,9 +49,7 @@ router bgp {{ asn }} vrf {{ vrf.id }}
 !
 address-family ipv4 unicast
  redistribute connected
-{% if leaking is defined and leaking %}
  import vrf {{ vrf.target }}
-{% endif %}
 exit-address-family
 !
 address-family l2vpn evpn

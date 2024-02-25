@@ -7,8 +7,6 @@ interfaces:
     connected_to: "leaf02-swp3"
     gateway: "10.0.20.1"
     routes:
-    - subnet: "10.0.10.0/24"
-    - subnet: "10.0.30.0/24"
   - name: "eth2"
     address: "10.0.21.2"
     netmask: "255.255.255.252"
@@ -20,3 +18,5 @@ interfaces:
     - subnet: "10.0.0.0/24"
     - subnet: "10.0.31.0/24"
     - subnet: "10.0.11.0/24"
+    - subnet: "10.0.10.0/24"
+    - subnet: "10.0.30.0/24"
