@@ -1,35 +1,21 @@
 ---
 - name: Configure vm network interfaces
   template:
-    src: interfaces-vms-vrf-rm.j2
+    src: interfaces-vms.j2
     dest: /etc/network/interfaces
-  register: interfaces_rendered
 
+## reload all interfaces
+- name: ifreload
+  command:
+    cmd: ifreload -a
 
-- name: Slurp the content of /etc/network/interfaces
-  slurp:
-    src: /etc/network/interfaces
-  register: slurped_interfaces
-- name: Display the content of /etc/network/interfaces
-  debug:
-    msg: "{{ slurped_interfaces['content'] | b64decode }}"
-- name: Ensure ifupdown2 is installed
-  ansible.builtin.apt:
-    name: ifupdown2
-    state: present
-  become: yes
-- name: Reconfigure network interfaces
+- name: Specific for Debian issue with routes
   block:
-    - name: Attempt to bring down and then up the interface
-      shell: ifdown {{ item.name }} && ifup {{ item.name }}
+    - name: Attempt to bring down all interfaces
+      shell: ifdown {{ item.name }}
       loop: "{{ interfaces }}"
       ignore_errors: yes
     - name: Ensure the interface is up
       shell: ifup {{ item.name }}
       loop: "{{ interfaces }}"
       ignore_errors: yes
-    - name: Ensure the interface is up (it's buggy sometimes)
-      shell: ifup {{ item.name }}
-      loop: "{{ interfaces }}"
-      ignore_errors: yes
-

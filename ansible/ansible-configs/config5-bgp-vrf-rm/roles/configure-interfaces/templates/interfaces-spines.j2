@@ -1,5 +1,4 @@
-# This file describes the network interfaces available on your system
-# and how to activate them. For more information, see interfaces(5).
+# /templates/interfaces-spines.j2
 
 source /etc/network/interfaces.d/*.intf
 
@@ -7,13 +6,6 @@ source /etc/network/interfaces.d/*.intf
 auto lo
 iface lo inet static
     address {{ lo_address }}
-
-# The loopback for RP and PIM
-auto lo1
-iface lo1 inet static
-    pre-up ip link add lo1 type dummy
-    post-down ip link delete lo1 type dummy
-    address {{ lo1_address }}
 
 # The primary network interface
 auto eth0

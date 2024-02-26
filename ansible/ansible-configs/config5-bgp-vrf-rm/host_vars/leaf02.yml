@@ -1,11 +1,4 @@
-lo_address: 10.0.0.2/32
-router_id: 10.0.0.2
-ospf_networks:
-  - subnet: "10.0.0.2/32"
-  - subnet: "10.1.2.0/30"
-  - subnet: "10.2.2.0/30"
-  - subnet: "10.0.20.0/30"
-  - subnet: "10.0.21.0/30"
+---
 interfaces:
   - name: "swp1"
     address: "10.1.2.1/30"
@@ -51,3 +44,14 @@ vrfs:
         router_id: 10.0.0.2
         vni: 10020
         rt: 20
+
+lo_address: 10.0.0.2/32
+
+router_id: 10.0.0.2
+
+ospf_networks:
+  - subnet: "10.0.0.2/32"
+  - subnet: "10.1.2.0/30"
+  - subnet: "10.2.2.0/30"
+  - subnet: "10.0.20.0/30"
+  - subnet: "10.0.21.0/30"
